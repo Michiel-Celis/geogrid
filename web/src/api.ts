@@ -117,6 +117,86 @@ export const mainPlots = {
     api<void>(`/api/projects/${projectId}/main-plot`, { method: 'DELETE' }),
 };
 
+export type GeoJsonLineString = {
+  type: 'LineString';
+  coordinates: number[][];
+};
+
+export type RoadClass = 'arterial' | 'collector' | 'local' | 'alley';
+
+export type Road = {
+  id: string;
+  projectId: string;
+  name?: string | null;
+  class: RoadClass;
+  lanes: number;
+  widthMeters: number;
+  hasFootpath: boolean;
+  hasBikepath: boolean;
+  geometry: GeoJsonLineString;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RoadInput = Omit<Road, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>;
+
+export const roads = {
+  list: (projectId: string) => api<Road[]>(`/api/projects/${projectId}/roads`),
+  create: (projectId: string, input: RoadInput) =>
+    api<Road>(`/api/projects/${projectId}/roads`, { method: 'POST', body: JSON.stringify(input) }),
+  update: (projectId: string, id: string, input: RoadInput) =>
+    api<Road>(`/api/projects/${projectId}/roads/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+  remove: (projectId: string, id: string) =>
+    api<void>(`/api/projects/${projectId}/roads/${id}`, { method: 'DELETE' }),
+};
+
+export type ReservedKind = 'town_square' | 'forest' | 'park' | 'pond';
+
+export type ReservedArea = {
+  id: string;
+  projectId: string;
+  name?: string | null;
+  kind: ReservedKind;
+  geometry: GeoJsonPolygon;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ReservedAreaInput = Omit<ReservedArea, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>;
+
+export const reservedAreas = {
+  list: (projectId: string) => api<ReservedArea[]>(`/api/projects/${projectId}/reserved-areas`),
+  create: (projectId: string, input: ReservedAreaInput) =>
+    api<ReservedArea>(`/api/projects/${projectId}/reserved-areas`, { method: 'POST', body: JSON.stringify(input) }),
+  update: (projectId: string, id: string, input: ReservedAreaInput) =>
+    api<ReservedArea>(`/api/projects/${projectId}/reserved-areas/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+  remove: (projectId: string, id: string) =>
+    api<void>(`/api/projects/${projectId}/reserved-areas/${id}`, { method: 'DELETE' }),
+};
+
+export type SuggestiveLine = {
+  id: string;
+  projectId: string;
+  name?: string | null;
+  weight: number;
+  toleranceMeters: number;
+  geometry: GeoJsonLineString;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SuggestiveLineInput = Omit<SuggestiveLine, 'id' | 'projectId' | 'createdAt' | 'updatedAt'>;
+
+export const suggestiveLines = {
+  list: (projectId: string) => api<SuggestiveLine[]>(`/api/projects/${projectId}/suggestive-lines`),
+  create: (projectId: string, input: SuggestiveLineInput) =>
+    api<SuggestiveLine>(`/api/projects/${projectId}/suggestive-lines`, { method: 'POST', body: JSON.stringify(input) }),
+  update: (projectId: string, id: string, input: SuggestiveLineInput) =>
+    api<SuggestiveLine>(`/api/projects/${projectId}/suggestive-lines/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+  remove: (projectId: string, id: string) =>
+    api<void>(`/api/projects/${projectId}/suggestive-lines/${id}`, { method: 'DELETE' }),
+};
+
 /** Suggest a UTM EPSG SRID for the given lat/lon (WGS84 northern/southern hemisphere). */
 export function suggestUtmSrid(lat: number, lon: number): number {
   const zone = Math.floor((lon + 180) / 6) + 1;

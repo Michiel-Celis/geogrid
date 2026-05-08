@@ -64,6 +64,10 @@ Controllers/
  HealthController.cs
  MainPlotsController.cs
  ProjectsController.cs
+ ReservedAreasController.cs
+ RoadsController.cs
+ SuggestiveLinesController.cs
+Geo/GeoJsonConverter.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Geogrid.Api.AssemblyInfo.cs
