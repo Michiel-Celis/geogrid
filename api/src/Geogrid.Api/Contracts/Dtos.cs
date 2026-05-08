@@ -35,3 +35,16 @@ public record ProjectResponse(
     double CenterLon,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
+
+// GeoJSON Polygon shape: { type: "Polygon", coordinates: [[ [lon,lat], ... ]] }
+public record GeoJsonPolygon(string Type, double[][][] Coordinates);
+
+public record MainPlotRequest([Required] GeoJsonPolygon Geometry);
+
+public record MainPlotResponse(
+    Guid Id,
+    Guid ProjectId,
+    GeoJsonPolygon Geometry,
+    double AreaSqM,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset UpdatedAt);

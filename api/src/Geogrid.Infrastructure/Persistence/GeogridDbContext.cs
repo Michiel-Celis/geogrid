@@ -10,6 +10,7 @@ public class GeogridDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, G
     public GeogridDbContext(DbContextOptions<GeogridDbContext> options) : base(options) { }
 
     public DbSet<Project> Projects => Set<Project>();
+    public DbSet<MainPlot> MainPlots => Set<MainPlot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,21 @@ public class GeogridDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, G
                 .HasForeignKey(p => p.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(p => p.OwnerId);
+        });
+
+        modelBuilder.Entity<MainPlot>(b =>
+        {
+            b.ToTable("main_plots");
+            b.HasKey(p => p.Id);
+            b.Property(p => p.Geometry)
+                .HasColumnType("geometry(Polygon, 4326)")
+                .IsRequired();
+            b.HasOne(p => p.Project)
+                .WithMany()
+                .HasForeignKey(p => p.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(p => p.ProjectId).IsUnique();
+            b.HasIndex(p => p.Geometry).HasMethod("gist");
         });
     }
 }

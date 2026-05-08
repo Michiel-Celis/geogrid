@@ -92,6 +92,31 @@ export const projects = {
   remove: (id: string) => api<void>(`/api/projects/${id}`, { method: 'DELETE' }),
 };
 
+export type GeoJsonPolygon = {
+  type: 'Polygon';
+  coordinates: number[][][];
+};
+
+export type MainPlot = {
+  id: string;
+  projectId: string;
+  geometry: GeoJsonPolygon;
+  areaSqM: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const mainPlots = {
+  get: (projectId: string) => api<MainPlot | undefined>(`/api/projects/${projectId}/main-plot`),
+  put: (projectId: string, geometry: GeoJsonPolygon) =>
+    api<MainPlot>(`/api/projects/${projectId}/main-plot`, {
+      method: 'PUT',
+      body: JSON.stringify({ geometry }),
+    }),
+  remove: (projectId: string) =>
+    api<void>(`/api/projects/${projectId}/main-plot`, { method: 'DELETE' }),
+};
+
 /** Suggest a UTM EPSG SRID for the given lat/lon (WGS84 northern/southern hemisphere). */
 export function suggestUtmSrid(lat: number, lon: number): number {
   const zone = Math.floor((lon + 180) / 6) + 1;

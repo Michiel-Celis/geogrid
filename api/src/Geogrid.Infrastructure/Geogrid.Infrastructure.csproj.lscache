@@ -64,6 +64,8 @@ Persistence/
  Migrations/
   20260508130730_InitialCreate.cs
   20260508130730_InitialCreate.Designer.cs
+  20260508131422_AddMainPlot.cs
+  20260508131422_AddMainPlot.Designer.cs
   GeogridDbContextModelSnapshot.cs
 
 [metadataReferences]
