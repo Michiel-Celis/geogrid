@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: geogrid-db
+    environment:
+      POSTGRES_USER: geogrid
+      POSTGRES_PASSWORD: geogrid
+      POSTGRES_DB: geogrid
+    ports:
+      - "5432:5432"
+    volumes:
+      - geogrid-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U geogrid -d geogrid"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./api
+      dockerfile: ../docker/api.Dockerfile
+    container_name: geogrid-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__Geogrid: "Host=db;Port=5432;Database=geogrid;Username=geogrid;Password=geogrid"
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["full"]
+
+  web:
+    build:
+      context: ./web
+      dockerfile: ../docker/web.Dockerfile
+    container_name: geogrid-web
+    environment:
+      VITE_API_BASE: http://localhost:5000
+    ports:
+      - "5173:5173"
+    profiles: ["full"]
+
+volumes:
+  geogrid-db-data:

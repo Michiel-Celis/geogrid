@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Geogrid.Api/Geogrid.Api.csproj" />
+    <Project Path="src/Geogrid.Domain/Geogrid.Domain.csproj" />
+    <Project Path="src/Geogrid.Infrastructure/Geogrid.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Geogrid.Tests/Geogrid.Tests.csproj" />
+  </Folder>
+</Solution>

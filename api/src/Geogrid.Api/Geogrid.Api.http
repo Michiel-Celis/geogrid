@@ -1,0 +1,6 @@
+@Geogrid.Api_HostAddress = http://localhost:5022
+
+GET {{Geogrid.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
