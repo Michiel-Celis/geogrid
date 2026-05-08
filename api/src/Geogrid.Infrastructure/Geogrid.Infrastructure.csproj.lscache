@@ -59,7 +59,12 @@ obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Geogrid.Infrastructure.AssemblyInfo.cs
  Geogrid.Infrastructure.GlobalUsings.g.cs
-Persistence/GeogridDbContext.cs
+Persistence/
+ GeogridDbContext.cs
+ Migrations/
+  20260508130730_InitialCreate.cs
+  20260508130730_InitialCreate.Designer.cs
+  GeogridDbContextModelSnapshot.cs
 
 [metadataReferences]
 ../Geogrid.Domain/obj/Debug/net10.0/ref/Geogrid.Domain.dll
@@ -232,6 +237,9 @@ Persistence/GeogridDbContext.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ microsoft.aspnetcore.cryptography.internal/9.0.0/lib/net9.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+ microsoft.aspnetcore.cryptography.keyderivation/9.0.0/lib/net9.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+ microsoft.aspnetcore.identity.entityframeworkcore/9.0.0/lib/net9.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
  microsoft.entityframeworkcore.abstractions/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll
  microsoft.entityframeworkcore.relational/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
  microsoft.entityframeworkcore/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.dll
@@ -240,6 +248,8 @@ Persistence/GeogridDbContext.cs
  microsoft.extensions.configuration.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.Configuration.Abstractions.dll
  microsoft.extensions.dependencyinjection.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
  microsoft.extensions.dependencyinjection/9.0.0/lib/net9.0/Microsoft.Extensions.DependencyInjection.dll
+ microsoft.extensions.identity.core/9.0.0/lib/net9.0/Microsoft.Extensions.Identity.Core.dll
+ microsoft.extensions.identity.stores/9.0.0/lib/net9.0/Microsoft.Extensions.Identity.Stores.dll
  microsoft.extensions.logging.abstractions/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.Abstractions.dll
  microsoft.extensions.logging/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.dll
  microsoft.extensions.options/9.0.0/lib/net9.0/Microsoft.Extensions.Options.dll
@@ -262,6 +272,9 @@ Persistence/GeogridDbContext.cs
 <DOTNET>/sdk/10.0.103/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
+<NUGET>/microsoft.codeanalysis.analyzers/3.3.4/analyzers/dotnet/cs/
+ Microsoft.CodeAnalysis.Analyzers.dll
+ Microsoft.CodeAnalysis.CSharp.Analyzers.dll
 <NUGET>/
  microsoft.entityframeworkcore.analyzers/9.0.0/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
  microsoft.extensions.logging.abstractions/9.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Logging.Generators.dll

@@ -60,6 +60,7 @@ obj/Debug/net10.0/
  Geogrid.Tests.AssemblyInfo.cs
  Geogrid.Tests.GlobalUsings.g.cs
 ProjectTests.cs
+TokenServiceTests.cs
 
 [metadataReferences]
 ../../src/
@@ -376,11 +377,22 @@ ProjectTests.cs
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
 <NUGET>/
+ microsoft.aspnetcore.authentication.jwtbearer/9.0.0/lib/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+ microsoft.aspnetcore.identity.entityframeworkcore/9.0.0/lib/net9.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+ microsoft.aspnetcore.mvc.testing/9.0.0/lib/net9.0/Microsoft.AspNetCore.Mvc.Testing.dll
  microsoft.aspnetcore.openapi/10.0.3/lib/net10.0/Microsoft.AspNetCore.OpenApi.dll
+ microsoft.aspnetcore.testhost/9.0.0/lib/net9.0/Microsoft.AspNetCore.TestHost.dll
  microsoft.codecoverage/17.14.1/lib/net8.0/Microsoft.VisualStudio.CodeCoverage.Shim.dll
  microsoft.entityframeworkcore.abstractions/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Abstractions.dll
  microsoft.entityframeworkcore.relational/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.Relational.dll
  microsoft.entityframeworkcore/9.0.0/lib/net8.0/Microsoft.EntityFrameworkCore.dll
+ microsoft.extensions.dependencymodel/9.0.0/lib/net9.0/Microsoft.Extensions.DependencyModel.dll
+ microsoft.identitymodel.abstractions/8.0.1/lib/net9.0/Microsoft.IdentityModel.Abstractions.dll
+ microsoft.identitymodel.jsonwebtokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+ microsoft.identitymodel.logging/8.0.1/lib/net9.0/Microsoft.IdentityModel.Logging.dll
+ microsoft.identitymodel.protocols.openidconnect/8.0.1/lib/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+ microsoft.identitymodel.protocols/8.0.1/lib/net9.0/Microsoft.IdentityModel.Protocols.dll
+ microsoft.identitymodel.tokens/8.0.1/lib/net9.0/Microsoft.IdentityModel.Tokens.dll
  microsoft.openapi/2.0.0/lib/net8.0/Microsoft.OpenApi.dll
  microsoft.testplatform.testhost/17.14.1/lib/net8.0/
   Microsoft.TestPlatform.CommunicationUtilities.dll
@@ -398,6 +410,7 @@ ProjectTests.cs
  npgsql.entityframeworkcore.postgresql/9.0.2/lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
  npgsql.nettopologysuite/9.0.2/lib/net6.0/Npgsql.NetTopologySuite.dll
  npgsql/9.0.2/lib/net8.0/Npgsql.dll
+ system.identitymodel.tokens.jwt/8.0.1/lib/net9.0/System.IdentityModel.Tokens.Jwt.dll
  xunit.abstractions/2.0.3/lib/netstandard2.0/xunit.abstractions.dll
  xunit.assert/2.9.3/lib/net6.0/xunit.assert.dll
  xunit.extensibility.core/2.9.3/lib/netstandard1.1/xunit.core.dll
