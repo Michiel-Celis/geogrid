@@ -103,3 +103,41 @@ public record SuggestiveLineResponse(
     GeoJsonLineString Geometry,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
+
+public record GenerationRequest(
+    [Range(50, 1_000_000)] double TargetPlotAreaSqM = 600,
+    [Range(10, 1_000_000)] double MinPlotAreaSqM = 200,
+    [Range(50, 5_000_000)] double MaxPlotAreaSqM = 2000,
+    [Range(0, 1000)] double MinRoadFrontageMeters = 8,
+    [Range(0, int.MaxValue)] int Seed = 0,
+    [Range(-3.15, 3.15)] double GridRotationRadians = 0);
+
+public record GenerationStatsResponse(
+    double MainPlotAreaSqM,
+    double TotalPlotAreaSqM,
+    double TotalReservedAreaSqM,
+    double TotalRoadAreaSqM,
+    int PlotsValid,
+    int PlotsInvalid);
+
+public record PlotResponse(
+    Guid Id,
+    Guid GenerationRunId,
+    int BlockIndex,
+    GeoJsonPolygon Geometry,
+    double AreaSqM,
+    double RoadFrontageMeters,
+    bool ValidationPassed,
+    string? ValidationReason);
+
+public record GenerationRunResponse(
+    Guid Id,
+    Guid ProjectId,
+    string Status,
+    string Algorithm,
+    int Seed,
+    GenerationRequest Parameters,
+    GenerationStatsResponse Stats,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset? CommittedAt,
+    IReadOnlyList<PlotResponse> Plots);

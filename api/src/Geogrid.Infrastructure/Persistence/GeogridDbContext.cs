@@ -14,6 +14,8 @@ public class GeogridDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, G
     public DbSet<Road> Roads => Set<Road>();
     public DbSet<ReservedArea> ReservedAreas => Set<ReservedArea>();
     public DbSet<SuggestiveLine> SuggestiveLines => Set<SuggestiveLine>();
+    public DbSet<GenerationRun> GenerationRuns => Set<GenerationRun>();
+    public DbSet<Plot> Plots => Set<Plot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -100,6 +102,43 @@ public class GeogridDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, G
                 .OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(s => s.ProjectId);
             b.HasIndex(s => s.Geometry).HasMethod("gist");
+        });
+
+        modelBuilder.Entity<GenerationRun>(b =>
+        {
+            b.ToTable("generation_runs");
+            b.HasKey(g => g.Id);
+            b.Property(g => g.Status).HasMaxLength(20).IsRequired();
+            b.Property(g => g.Algorithm).HasMaxLength(80).IsRequired();
+            b.Property(g => g.ParametersJson).HasColumnType("jsonb").IsRequired();
+            b.Property(g => g.StatsJson).HasColumnType("jsonb").IsRequired();
+            b.HasOne(g => g.Project)
+                .WithMany()
+                .HasForeignKey(g => g.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(g => g.ProjectId);
+            b.HasIndex(g => new { g.ProjectId, g.Status });
+        });
+
+        modelBuilder.Entity<Plot>(b =>
+        {
+            b.ToTable("plots");
+            b.HasKey(p => p.Id);
+            b.Property(p => p.Geometry)
+                .HasColumnType("geometry(Polygon, 4326)")
+                .IsRequired();
+            b.Property(p => p.ValidationReason).HasMaxLength(500);
+            b.HasOne(p => p.Project)
+                .WithMany()
+                .HasForeignKey(p => p.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(p => p.GenerationRun)
+                .WithMany(g => g.Plots)
+                .HasForeignKey(p => p.GenerationRunId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(p => p.ProjectId);
+            b.HasIndex(p => p.GenerationRunId);
+            b.HasIndex(p => p.Geometry).HasMethod("gist");
         });
     }
 }

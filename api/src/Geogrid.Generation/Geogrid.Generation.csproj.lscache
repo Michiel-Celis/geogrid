@@ -13,18 +13,18 @@ primary
 lastDtbSucceeded
 
 [properties]
-AssemblyName=Geogrid.Infrastructure
+AssemblyName=Geogrid.Generation
 CommandLineArgsForDesignTimeEvaluation=-langversion:14.0 -define:TRACE
 CompilerGeneratedFilesOutputPath=
 MaxSupportedLangVersion=14.0
 ProjectAssetsFile=<PATH>obj/project.assets.json
-RootNamespace=Geogrid.Infrastructure
+RootNamespace=Geogrid.Generation
 RunAnalyzers=
 RunAnalyzersDuringLiveAnalysis=
 SolutionPath=*Undefined*
 TargetFrameworkIdentifier=.NETCoreApp
-TargetPath=<PATH>bin/Debug/net10.0/Geogrid.Infrastructure.dll
-TargetRefPath=<PATH>obj/Debug/net10.0/ref/Geogrid.Infrastructure.dll
+TargetPath=<PATH>bin/Debug/net10.0/Geogrid.Generation.dll
+TargetRefPath=<PATH>obj/Debug/net10.0/ref/Geogrid.Generation.dll
 TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [commandLineArguments]
@@ -44,8 +44,8 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /debug:portable
 /filealign:512
 /optimize-
-/out:obj\Debug\net10.0\Geogrid.Infrastructure.dll
-/refout:obj\Debug\net10.0\refint\Geogrid.Infrastructure.dll
+/out:obj\Debug\net10.0\Geogrid.Generation.dll
+/refout:obj\Debug\net10.0\refint\Geogrid.Generation.dll
 /target:library
 /warnaserror-
 /utf8output
@@ -54,23 +54,13 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
-DependencyInjection.cs
+ClippedGridGenerator.cs
+Contracts.cs
+LocalProjection.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
- Geogrid.Infrastructure.AssemblyInfo.cs
- Geogrid.Infrastructure.GlobalUsings.g.cs
-Persistence/
- GeogridDbContext.cs
- Migrations/
-  20260508130730_InitialCreate.cs
-  20260508130730_InitialCreate.Designer.cs
-  20260508131422_AddMainPlot.cs
-  20260508131422_AddMainPlot.Designer.cs
-  20260508132053_AddRoadsReservedSuggestive.cs
-  20260508132053_AddRoadsReservedSuggestive.Designer.cs
-  20260508132859_AddGenerationRunsAndPlots.cs
-  20260508132859_AddGenerationRunsAndPlots.Designer.cs
-  GeogridDbContextModelSnapshot.cs
+ Geogrid.Generation.AssemblyInfo.cs
+ Geogrid.Generation.GlobalUsings.g.cs
 
 [metadataReferences]
 ../Geogrid.Domain/obj/Debug/net10.0/ref/Geogrid.Domain.dll
@@ -260,12 +250,7 @@ Persistence/
  microsoft.extensions.logging/9.0.0/lib/net9.0/Microsoft.Extensions.Logging.dll
  microsoft.extensions.options/9.0.0/lib/net9.0/Microsoft.Extensions.Options.dll
  microsoft.extensions.primitives/9.0.0/lib/net9.0/Microsoft.Extensions.Primitives.dll
- nettopologysuite.io.postgis/2.1.0/lib/netstandard2.1/NetTopologySuite.IO.PostGis.dll
  nettopologysuite/2.5.0/lib/netstandard2.0/NetTopologySuite.dll
- npgsql.entityframeworkcore.postgresql.nettopologysuite/9.0.2/lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite.dll
- npgsql.entityframeworkcore.postgresql/9.0.2/lib/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
- npgsql.nettopologysuite/9.0.2/lib/net6.0/Npgsql.NetTopologySuite.dll
- npgsql/9.0.2/lib/net8.0/Npgsql.dll
 
 [analyzerReferences]
 <DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.3/analyzers/dotnet/cs/
@@ -278,9 +263,6 @@ Persistence/
 <DOTNET>/sdk/10.0.103/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
-<NUGET>/microsoft.codeanalysis.analyzers/3.3.4/analyzers/dotnet/cs/
- Microsoft.CodeAnalysis.Analyzers.dll
- Microsoft.CodeAnalysis.CSharp.Analyzers.dll
 <NUGET>/
  microsoft.entityframeworkcore.analyzers/9.0.0/analyzers/dotnet/cs/Microsoft.EntityFrameworkCore.Analyzers.dll
  microsoft.extensions.logging.abstractions/9.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Logging.Generators.dll
@@ -289,4 +271,4 @@ Persistence/
 [analyzerConfigFiles]
 ../../../.editorconfig
 <DOTNET>/sdk/10.0.103/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
-obj/Debug/net10.0/Geogrid.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+obj/Debug/net10.0/Geogrid.Generation.GeneratedMSBuildEditorConfig.editorconfig

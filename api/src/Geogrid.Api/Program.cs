@@ -1,6 +1,7 @@
 using System.Text;
 using Geogrid.Api.Auth;
 using Geogrid.Domain.Entities;
+using Geogrid.Generation;
 using Geogrid.Infrastructure;
 using Geogrid.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,6 +48,7 @@ if (string.IsNullOrWhiteSpace(jwt.Key))
 }
 
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<IPlotGenerator, ClippedGridGenerator>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

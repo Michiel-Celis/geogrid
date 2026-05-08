@@ -10,11 +10,15 @@ import Map, {
 import 'maplibre-gl/dist/maplibre-gl.css';
 import area from '@turf/area';
 import {
+  generations,
   mainPlots,
   projects,
   reservedAreas,
   roads,
   suggestiveLines,
+  DEFAULT_GENERATION_PARAMS,
+  type GenerationParams,
+  type GenerationRun,
   type MainPlot,
   type Project,
   type ReservedArea,
@@ -67,6 +71,7 @@ type LayersVisible = {
   roads: boolean;
   reserved: boolean;
   suggestive: boolean;
+  plots: boolean;
 };
 
 const DEFAULT_VISIBLE: LayersVisible = {
@@ -74,6 +79,7 @@ const DEFAULT_VISIBLE: LayersVisible = {
   roads: true,
   reserved: true,
   suggestive: true,
+  plots: true,
 };
 
 function vertexDot(color: string): React.CSSProperties {
@@ -103,6 +109,10 @@ export default function ProjectView() {
   const [editVerts, setEditVerts] = useState<LonLat[] | null>(null); // when set, vertex-edit handles shown
   const [visible, setVisible] = useState<LayersVisible>(DEFAULT_VISIBLE);
 
+  const [genParams, setGenParams] = useState<GenerationParams>(DEFAULT_GENERATION_PARAMS);
+  const [activeRun, setActiveRun] = useState<GenerationRun | null>(null);
+  const [allRuns, setAllRuns] = useState<GenerationRun[]>([]);
+
   const isDrawing = tool !== 'select';
 
   // ----- load -----
@@ -115,14 +125,22 @@ export default function ProjectView() {
       roads.list(id),
       reservedAreas.list(id),
       suggestiveLines.list(id),
+      generations.list(id),
     ])
-      .then(([p, mp, rs, ra, sl]) => {
+      .then(async ([p, mp, rs, ra, sl, runs]) => {
         if (cancelled) return;
         setProject(p);
         setMainPlot(mp ?? null);
         setRoadList(rs);
         setReservedList(ra);
         setSuggestiveList(sl);
+        setAllRuns(runs);
+        // Pick the most relevant run: committed first, otherwise newest preview.
+        const pick = runs.find((r) => r.status === 'committed') ?? runs.find((r) => r.status === 'preview');
+        if (pick) {
+          const full = await generations.get(p.id, pick.id);
+          if (!cancelled) setActiveRun(full);
+        }
       })
       .catch((e: unknown) => {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
@@ -413,6 +431,48 @@ export default function ProjectView() {
     finally { setBusy(false); }
   };
 
+  // ----- generation -----
+  const runGenerate = async () => {
+    if (!id) return;
+    if (!mainPlot) { setError('Draw a main plot first.'); return; }
+    setBusy(true); setError(null); setInfo(null);
+    try {
+      const run = await generations.generate(id, genParams);
+      setActiveRun(run);
+      setAllRuns((prev) => [run, ...prev.filter((r) => r.id !== run.id)]);
+      setInfo(`Generated ${run.plots.length} plots (${run.stats.plotsValid} valid, ${run.stats.plotsInvalid} flagged).`);
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  const commitRun = async () => {
+    if (!id || !activeRun) return;
+    if (!window.confirm('Commit this generation? Other previews for this project will be discarded.')) return;
+    setBusy(true); setError(null);
+    try {
+      const run = await generations.commit(id, activeRun.id);
+      setActiveRun(run);
+      const refreshed = await generations.list(id);
+      setAllRuns(refreshed);
+      setInfo('Generation committed.');
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
+  const discardRun = async () => {
+    if (!id || !activeRun) return;
+    if (!window.confirm('Discard this generation?')) return;
+    setBusy(true); setError(null);
+    try {
+      await generations.remove(id, activeRun.id);
+      setActiveRun(null);
+      const refreshed = await generations.list(id);
+      setAllRuns(refreshed);
+      setInfo('Generation discarded.');
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(false); }
+  };
+
   // ----- map sources/features -----
   const mainPlotFC = useMemo(() => {
     const features = [];
@@ -475,6 +535,18 @@ export default function ProjectView() {
       })),
     };
   }, [visible.suggestive, suggestiveList]);
+
+  const plotsFC = useMemo(() => {
+    if (!visible.plots || !activeRun) return { type: 'FeatureCollection' as const, features: [] };
+    return {
+      type: 'FeatureCollection' as const,
+      features: activeRun.plots.map((pl) => ({
+        type: 'Feature' as const,
+        properties: { id: pl.id, valid: pl.validationPassed ? 1 : 0 },
+        geometry: pl.geometry,
+      })),
+    };
+  }, [visible.plots, activeRun]);
 
   // Draft preview while drawing.
   const draftPreview = useMemo(() => {
@@ -603,6 +675,18 @@ export default function ProjectView() {
               }} />
             </Source>
 
+            {/* Generated plots */}
+            <Source id="plots" type="geojson" data={plotsFC}>
+              <Layer id="plots-fill" type="fill" paint={{
+                'fill-color': ['case', ['==', ['get', 'valid'], 1], '#43a047', '#e53935'],
+                'fill-opacity': 0.35,
+              }} />
+              <Layer id="plots-outline" type="line" paint={{
+                'line-color': ['case', ['==', ['get', 'valid'], 1], '#1b5e20', '#b71c1c'],
+                'line-width': 1,
+              }} />
+            </Source>
+
             {/* Draft preview */}
             {draftPreview && (
               <Source id="draft" type="geojson" data={draftPreview}>
@@ -663,6 +747,15 @@ export default function ProjectView() {
           saveReservedProps={saveReservedProps}
           saveSuggestiveProps={saveSuggestiveProps}
           busy={busy}
+          plotsCount={activeRun?.plots.length ?? 0}
+          hasMainPlot={!!mainPlot}
+          genParams={genParams}
+          setGenParams={setGenParams}
+          activeRun={activeRun}
+          allRunsCount={allRuns.length}
+          runGenerate={() => void runGenerate()}
+          commitRun={() => void commitRun()}
+          discardRun={() => void discardRun()}
         />
       </div>
 
@@ -749,6 +842,15 @@ type SidebarProps = {
   saveReservedProps: (patch: Partial<ReservedArea>) => void;
   saveSuggestiveProps: (patch: Partial<SuggestiveLine>) => void;
   busy: boolean;
+  plotsCount: number;
+  hasMainPlot: boolean;
+  genParams: GenerationParams;
+  setGenParams: (p: GenerationParams) => void;
+  activeRun: GenerationRun | null;
+  allRunsCount: number;
+  runGenerate: () => void;
+  commitRun: () => void;
+  discardRun: () => void;
 };
 
 function Sidebar(p: SidebarProps) {
@@ -767,6 +869,23 @@ function Sidebar(p: SidebarProps) {
           onChange={(c) => p.setVisible({ ...p.visible, reserved: c })} count={p.reserved.length} />
         <LayerToggle label="Suggestive lines" checked={p.visible.suggestive}
           onChange={(c) => p.setVisible({ ...p.visible, suggestive: c })} count={p.suggestive.length} />
+        <LayerToggle label="Generated plots" checked={p.visible.plots}
+          onChange={(c) => p.setVisible({ ...p.visible, plots: c })} count={p.plotsCount} />
+      </div>
+
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 0.5rem 0' }}>Generate</h3>
+        <GeneratePanel
+          params={p.genParams}
+          setParams={p.setGenParams}
+          activeRun={p.activeRun}
+          allRunsCount={p.allRunsCount}
+          hasMainPlot={p.hasMainPlot}
+          busy={p.busy}
+          onGenerate={p.runGenerate}
+          onCommit={p.commitRun}
+          onDiscard={p.discardRun}
+        />
       </div>
 
       <div style={sectionStyle}>
@@ -943,5 +1062,75 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span style={{ fontSize: 12, color: '#555' }}>{label}</span>
       {children}
     </label>
+  );
+}
+
+function GeneratePanel({
+  params, setParams, activeRun, allRunsCount, hasMainPlot, busy,
+  onGenerate, onCommit, onDiscard,
+}: {
+  params: GenerationParams;
+  setParams: (p: GenerationParams) => void;
+  activeRun: GenerationRun | null;
+  allRunsCount: number;
+  hasMainPlot: boolean;
+  busy: boolean;
+  onGenerate: () => void;
+  onCommit: () => void;
+  onDiscard: () => void;
+}) {
+  const num = (k: keyof GenerationParams) => (
+    <input type="number" value={params[k]} disabled={busy}
+      onChange={(e) => setParams({ ...params, [k]: Number(e.target.value) })} />
+  );
+  return (
+    <div style={{ display: 'grid', gap: 8 }}>
+      <Field label="Target plot area (m²)">{num('targetPlotAreaSqM')}</Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <Field label="Min area">{num('minPlotAreaSqM')}</Field>
+        <Field label="Max area">{num('maxPlotAreaSqM')}</Field>
+      </div>
+      <Field label="Min road frontage (m)">{num('minRoadFrontageMeters')}</Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <Field label="Seed">{num('seed')}</Field>
+        <Field label="Rotation (rad)">{num('gridRotationRadians')}</Field>
+      </div>
+      <button onClick={onGenerate} disabled={busy || !hasMainPlot}
+        style={{ padding: '0.4rem 0.8rem', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4 }}>
+        {busy ? 'Working…' : 'Generate'}
+      </button>
+      {!hasMainPlot && <p style={{ color: '#a60', fontSize: 12, margin: 0 }}>Draw a main plot first.</p>}
+      {activeRun && (
+        <div style={{ borderTop: '1px solid #ddd', paddingTop: 8 }}>
+          <div style={{ fontSize: 12, color: '#666' }}>
+            Run <code>{activeRun.id.slice(0, 8)}</code> — <strong>{activeRun.status}</strong>
+            {' · '}{allRunsCount} total
+          </div>
+          <ul style={{ margin: '6px 0 8px', paddingLeft: 16, fontSize: 13, color: '#333' }}>
+            <li>Plots: {activeRun.plots.length} ({activeRun.stats.plotsValid} valid, {activeRun.stats.plotsInvalid} flagged)</li>
+            <li>Plot area: {Math.round(activeRun.stats.totalPlotAreaSqM).toLocaleString()} m²</li>
+            <li>Road area: {Math.round(activeRun.stats.totalRoadAreaSqM).toLocaleString()} m²</li>
+            <li>Reserved area: {Math.round(activeRun.stats.totalReservedAreaSqM).toLocaleString()} m²</li>
+            <li>Main plot: {Math.round(activeRun.stats.mainPlotAreaSqM).toLocaleString()} m²</li>
+          </ul>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {activeRun.status === 'preview' && (
+              <button onClick={onCommit} disabled={busy}>Commit</button>
+            )}
+            <button onClick={onDiscard} disabled={busy} style={{ color: '#c33' }}>Discard</button>
+          </div>
+          {activeRun.stats.plotsInvalid > 0 && (
+            <details style={{ marginTop: 6 }}>
+              <summary style={{ cursor: 'pointer', fontSize: 12 }}>Show flagged ({activeRun.stats.plotsInvalid})</summary>
+              <ul style={{ paddingLeft: 16, fontSize: 12, color: '#a30' }}>
+                {activeRun.plots.filter((pl) => !pl.validationPassed).slice(0, 30).map((pl) => (
+                  <li key={pl.id}>block {pl.blockIndex}: {pl.validationReason}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

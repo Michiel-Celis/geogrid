@@ -197,6 +197,69 @@ export const suggestiveLines = {
     api<void>(`/api/projects/${projectId}/suggestive-lines/${id}`, { method: 'DELETE' }),
 };
 
+export type GenerationParams = {
+  targetPlotAreaSqM: number;
+  minPlotAreaSqM: number;
+  maxPlotAreaSqM: number;
+  minRoadFrontageMeters: number;
+  seed: number;
+  gridRotationRadians: number;
+};
+
+export const DEFAULT_GENERATION_PARAMS: GenerationParams = {
+  targetPlotAreaSqM: 600,
+  minPlotAreaSqM: 200,
+  maxPlotAreaSqM: 2000,
+  minRoadFrontageMeters: 8,
+  seed: 0,
+  gridRotationRadians: 0,
+};
+
+export type GenerationStats = {
+  mainPlotAreaSqM: number;
+  totalPlotAreaSqM: number;
+  totalReservedAreaSqM: number;
+  totalRoadAreaSqM: number;
+  plotsValid: number;
+  plotsInvalid: number;
+};
+
+export type Plot = {
+  id: string;
+  generationRunId: string;
+  blockIndex: number;
+  geometry: GeoJsonPolygon;
+  areaSqM: number;
+  roadFrontageMeters: number;
+  validationPassed: boolean;
+  validationReason?: string | null;
+};
+
+export type GenerationRun = {
+  id: string;
+  projectId: string;
+  status: 'preview' | 'committed' | 'discarded';
+  algorithm: string;
+  seed: number;
+  parameters: GenerationParams;
+  stats: GenerationStats;
+  createdAt: string;
+  committedAt?: string | null;
+  plots: Plot[];
+};
+
+export const generations = {
+  list: (projectId: string) => api<GenerationRun[]>(`/api/projects/${projectId}/generations`),
+  get: (projectId: string, runId: string) =>
+    api<GenerationRun>(`/api/projects/${projectId}/generations/${runId}`),
+  generate: (projectId: string, params: GenerationParams) =>
+    api<GenerationRun>(`/api/projects/${projectId}/generations`, { method: 'POST', body: JSON.stringify(params) }),
+  commit: (projectId: string, runId: string) =>
+    api<GenerationRun>(`/api/projects/${projectId}/generations/${runId}/commit`, { method: 'POST' }),
+  remove: (projectId: string, runId: string) =>
+    api<void>(`/api/projects/${projectId}/generations/${runId}`, { method: 'DELETE' }),
+};
+
 /** Suggest a UTM EPSG SRID for the given lat/lon (WGS84 northern/southern hemisphere). */
 export function suggestUtmSrid(lat: number, lon: number): number {
   const zone = Math.floor((lon + 180) / 6) + 1;

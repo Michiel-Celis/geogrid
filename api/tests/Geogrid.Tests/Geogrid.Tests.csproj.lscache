@@ -55,6 +55,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 <NUGET>/microsoft.net.test.sdk/17.14.1/build/net8.0/Microsoft.NET.Test.Sdk.Program.cs
+ClippedGridGeneratorTests.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Geogrid.Tests.AssemblyInfo.cs
@@ -66,6 +67,7 @@ TokenServiceTests.cs
 ../../src/
  Geogrid.Api/obj/Debug/net10.0/ref/Geogrid.Api.dll
  Geogrid.Domain/obj/Debug/net10.0/ref/Geogrid.Domain.dll
+ Geogrid.Generation/obj/Debug/net10.0/ref/Geogrid.Generation.dll
  Geogrid.Infrastructure/obj/Debug/net10.0/ref/Geogrid.Infrastructure.dll
 <DOTNET>/packs/Microsoft.AspNetCore.App.Ref/10.0.3/ref/net10.0/
  Microsoft.AspNetCore.Antiforgery.dll

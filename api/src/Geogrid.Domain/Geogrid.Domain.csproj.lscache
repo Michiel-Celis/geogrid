@@ -56,7 +56,9 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 [sourceFiles]
 Entities/
  AppUser.cs
+ GenerationRun.cs
  MainPlot.cs
+ Plot.cs
  Project.cs
  ReservedArea.cs
  Road.cs

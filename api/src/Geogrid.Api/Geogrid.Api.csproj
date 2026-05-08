@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Geogrid.Domain\Geogrid.Domain.csproj" />
     <ProjectReference Include="..\Geogrid.Infrastructure\Geogrid.Infrastructure.csproj" />
+    <ProjectReference Include="..\Geogrid.Generation\Geogrid.Generation.csproj" />
   </ItemGroup>
 
 </Project>
